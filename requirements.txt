@@ -1,0 +1,6 @@
+pymysql
+nltk
+streamlit
+scikit-learn
+selenium
+beautifulsoup4
