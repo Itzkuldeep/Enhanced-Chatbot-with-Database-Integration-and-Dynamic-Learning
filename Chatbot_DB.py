@@ -97,7 +97,7 @@ def scrapping(input_text):
         
         time.sleep(3)  # Wait for the page to load
         
-        results = driver.find_elements(By.XPATH, "//*/span/span")
+        results = driver.find_elements(By.XPATH, "//*/span/span")        
         result_texts = [result.text for result in results if result.text.strip() != '']
         
     except Exception as e:
