@@ -81,30 +81,49 @@ def train_model():
     x = vectorizer.fit_transform(patterns)
     clf.fit(x, tags)
 
-# Web scraping function
+
 def scrapping(input_text):
     path = "C:/Users/kulde/Downloads/chromedriver-win64/chromedriver-win64/chromedriver.exe"
     s = Service(path)
     driver = webdriver.Chrome(service=s)
     
     try:
+        # Navigate to Google
         driver.get("https://google.com/")
         time.sleep(3)
         
-        box = driver.find_element(By.XPATH, "/html/body/div[1]/div[3]/form/div[1]/div[1]/div[1]/div/div[2]/textarea")
-        box.send_keys(input_text + " wikipedia")
-        box.send_keys(Keys.ENTER)
+        # Search for the input text followed by "wikipedia"
+        search_box = driver.find_element(By.NAME, "q")
+        search_box.send_keys(input_text + " wikipedia")
+        search_box.send_keys(Keys.RETURN)
         
         time.sleep(3)  # Wait for the page to load
         
-        results = driver.find_elements(By.XPATH, "//*/span/span")        
-        result_texts = [result.text for result in results if result.text.strip() != '']
+        # Click the first Wikipedia link in the search results
+        wiki_link = driver.find_element(By.XPATH, "//a[contains(@href, 'wikipedia.org')]")
+        wiki_link.click()
         
+        time.sleep(3)  # Wait for the Wikipedia page to load
+        
+        # Extract the first paragraph from the Wikipedia page
+        paragraphs = driver.find_elements(By.XPATH, "//div[@class='mw-parser-output']/p[not(@class)]")
+        intro_text = ""
+        
+        for paragraph in paragraphs:
+            text = paragraph.text.strip()
+            if text:
+                intro_text = text
+                break  # Only take the first non-empty paragraph
+
     except Exception as e:
         print(f"An error occurred: {e}")
-        result_texts = ["Sorry, I couldn't find an answer for that."]
+        intro_text = "Sorry, I couldn't find an answer for that."
 
-    return result_texts
+    finally:
+        driver.quit()
+    
+    return intro_text
+
 
 # Chatbot function to get a response
 def chatbot(input_text):
